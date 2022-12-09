@@ -94,10 +94,69 @@ def logout():
 def chat():
     if 'loggedin' in session:
         # User is loggedin show them the home page
-        return render_template('chat.html', username=session['nikname'])
+        mycursor = mydb.cursor()
+        current_user=session['nikname']
+        mycursor.execute('SELECT pseudo FROM user WHERE pseudo !=%s',(current_user,))
+        # Fetch one record and return result
+        users = mycursor.fetchall()
+        user_list=[]
+        for x in users:
+            #print(x[0])
+            user_list.append(x[0])
+        print (user_list)
+        return render_template('chat.html', username=session['nikname'], user_list=user_list)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
+@app.route('/message',methods = ['GET','POST'])
+def message():
+    if 'loggedin' in session:
+        if request.method == 'POST':
+            msg_from = request.form['msg_from']
+            msg_to = request.form['msg_to']
+            msg = request.form['msg']
+            print(msg_from)
+            print(msg_to)
+            print(msg)
+            
+            mycursor = mydb.cursor()
+
+            sql = "INSERT INTO messages (msg_from, msg_to, message) VALUES (%s, %s, %s)"
+            val = (msg_from,msg_to,msg)
+            mycursor.execute(sql, val)
+            
+            mydb.commit()    
+            print(mycursor.rowcount, "record inserted.")
+
+        # User is loggedin show them the home page
+        #return render_template('chat.html', username=session['nikname'])
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
     
-    
 
-app.run(host='0.0.0.0')
+@app.route('/get_msgs',methods = ['GET','POST'])
+def get_msgs():
+    if 'loggedin' in session:
+        if request.method == 'POST':
+            msg_from = request.form['msg_from']
+            msg_to = request.form['msg_to']
+            
+            mycursor = mydb.cursor()
+            
+            mycursor.execute('SELECT * FROM messages WHERE msg_from =%s AND msg_to =%s OR msg_from =%s AND msg_to =%s',(msg_from,msg_to,msg_to,msg_from,))
+            # Fetch one record and return result
+            msgs = mycursor.fetchall()
+            print(msgs)
+            return msgs
+            '''user_list=[]
+            for x in users:
+                #print(x[0])
+                user_list.append(x[0])
+            print (user_list)'''
+
+        # User is loggedin show them the home page
+        #return render_template('chat.html', username=session['nikname'])
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
+app.run(host='0.0.0.0',debug=True)
