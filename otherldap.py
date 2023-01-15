@@ -1,12 +1,13 @@
+
 from ldap3 import ALL, Connection, Server
 from ldap3.core.exceptions import LDAPException
 
-username = "hadir"
-password = "HS123@nabel<3."
-ldap_base = "dc=MOHANNED,dc=local"
+username = "mohanned"
+password = "MO-che<123.@&."
+ldap_base = "dc=ssir,dc=local"
 
 server = Server(
-    host="ldaps://192.168.1.81",
+    host="ldaps://192.168.56.105",
     port=50000,
     use_ssl=True,
     get_info=ALL,
