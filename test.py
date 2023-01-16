@@ -4,19 +4,20 @@ import mysql.connector
 import hashlib
 import sys
 # Connect to the LDAP server
-ldap_conn = ldap.initialize("ldap://192.168.56.105:50000")
+ldap_conn = ldap.initialize("ldap.forumsys.com:389")
 
 try:
-    ldap_conn.simple_bind("mohanned@ssir.local", "MO-che<123.@&a")
+    ldap_conn.simple_bind("cn=read-only-admin,dc=example,dc=com", "password")
 except (ldap.INVALID_CREDENTIALS):
     print("This password is incorrect!")
     sys.exit(3)
 print("Authentization successful")
+'''
 results = ldap_conn.search("dc=ssir,dc=local", ldap.SCOPE_SUBTREE,'(objectClass=*)',['mail'])
 
 # Print the search results
 print(results)
-'''
+
 base="dc=ssir,dc=local"
 attrs = "*"
 # Bind to the server using a DN and password
